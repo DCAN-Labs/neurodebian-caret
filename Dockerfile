@@ -1,10 +1,17 @@
-FROM ubuntu:12.04
+FROM ubuntu:14.04
 
 # Prevent interactive configuration prompts during package installations
 ENV DEBIAN_FRONTEND=noninteractive
 
 # -----------------------------------------------------------------------------
-# Step 1: Install prerequisite tools needed to add external repositories
+# Step 1: Update repository URLs for legacy Ubuntu
+# Since 14.04 is at end-of-life, we must point 'apt' to the old-releases server.
+# -----------------------------------------------------------------------------
+RUN sed -i -e 's/archive.ubuntu.com/old-releases.ubuntu.com/g' \
+           -e 's/security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
+
+# -----------------------------------------------------------------------------
+# Step 2: Install prerequisite tools needed to add external repositories
 # -----------------------------------------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wget \
@@ -13,21 +20,20 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # -----------------------------------------------------------------------------
-# Step 2: Add the NeuroDebian repository and its GPG security key
-# This repository securely hosts the final 5.65 version of Caret.
+# Step 3: Add the NeuroDebian repository and its GPG security key
+# Note that we are now pulling the 'trusty' list instead of 'xenial'.
 # -----------------------------------------------------------------------------
-RUN wget -O- http://neuro.debian.net/lists/xenial.us-nh.full | tee /etc/apt/sources.list.d/neurodebian.sources.list \
+RUN wget -O- http://neuro.debian.net/lists/trusty.us-nh.full | tee /etc/apt/sources.list.d/neurodebian.sources.list \
     && wget -qO - http://neuro.debian.net/_static/neuro.debian.net.asc | apt-key add -
 
 # -----------------------------------------------------------------------------
-# Step 3: Install the Caret software and clean up the package cache
+# Step 4: Install the Caret software and clean up the package cache
 # -----------------------------------------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
     caret \
     && rm -rf /var/lib/apt/lists/*
 
 # -----------------------------------------------------------------------------
-# Step 4: Set the default command
-# 'caret' launches the GUI, while 'caret_command' accesses the CLI toolkit
+# Step 5: Set the default command
 # -----------------------------------------------------------------------------
 CMD ["caret"]
