@@ -1,8 +1,4 @@
-# -----------------------------------------------------------------------------
-# Base Image: Ubuntu 16.04 (Xenial)
-# Chosen for maximum compatibility with Caret 5.65 dependencies.
-# -----------------------------------------------------------------------------
-FROM ubuntu:16.04
+FROM ubuntu:12.04
 
 # Prevent interactive configuration prompts during package installations
 ENV DEBIAN_FRONTEND=noninteractive
