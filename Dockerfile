@@ -14,5 +14,4 @@ RUN wget -O- http://neuro.debian.net/lists/trusty.us-nh.full | tee /etc/apt/sour
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     caret \
-    caret-data \
     && rm -rf /var/lib/apt/lists/*
